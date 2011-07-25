@@ -1,21 +1,23 @@
 var http    = require('http');
 var fs      = require('fs');
+var path    = require('path');
 
 http.createServer(function (request, response) {
-        var startTime = new Date().getTime();
+    var startTime = new Date().getTime();
     response.writeHead(200, {'Content-Type': 'text/html'});
-    fs.readFile('examples/index.html', function (err, data) {
+
+    var url = 'examples/index.html';
+    request_url = request.url.replace(/^\//, '');
+    console.info(request_url);
+    if (path.existsSync(request_url))
+        url = request_url;
+    fs.readFile(url, function (err, data) {
+        url = request.url;
         if (err) throw err;
         response.write(data);
         response.end('');
     });
-/*    fs.stat('./', function(err, stats) {
-        console.log(stats);
-        console.log(stats.isDirectory());
-    });
-    fs.readdir('./', function(err, files) {
-        console.log(files);
-    });*/
+
     var elapsedTime = new Date().getTime() - startTime;
     console.log("Elapsed time (in ms): " + elapsedTime);
 }).listen(process.env.C9_PORT);
